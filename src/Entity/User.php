@@ -2,17 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields={"username"}, message="There is already an account with this username")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User implements UserInterface
 {
+    const REGISTRO_EXITOSO = 'Se ha registrado exitosamente';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -23,7 +22,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private $username;
+    private $email;
 
     /**
      * @ORM\Column(type="json")
@@ -36,9 +35,60 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $ban;
+
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $nombre;
+
+
+    /**
+     *  @ORM\Column(type="string")
+     */
+    private $comentarios;
+
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Posts", mappedBy="user")
+     */
+    private $posts;
+
+    /**
+     *  @ORM\Column(type="string")
+     */
+    private $profesion;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->ban = false;
+        $this->roles = ['ROLE_USER'];
+    }
+
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     /**
@@ -48,14 +98,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
+        return (string) $this->email;
     }
 
     /**
@@ -108,4 +151,38 @@ class User implements UserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBan()
+    {
+        return $this->ban;
+    }
+
+    /**
+     * @param mixed $ban
+     */
+    public function setBan($ban): void
+    {
+        $this->ban = $ban;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNombre()
+    {
+        return $this->nombre;
+    }
+
+    /**
+     * @param mixed $nombre
+     */
+    public function setNombre($nombre): void
+    {
+        $this->nombre = $nombre;
+    }
+
+
 }
